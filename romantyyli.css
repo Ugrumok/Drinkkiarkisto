@@ -1,0 +1,8 @@
+function addRow() {
+    const container = document.getElementById("ingredients");
+    const firstRow = document.querySelector(".ingredient-row");
+    const newRow = firstRow.cloneNode(true);
+    newRow.querySelector("select").selectedIndex = 0;
+    newRow.querySelector("input").value = "";
+    container.appendChild(newRow);
+}

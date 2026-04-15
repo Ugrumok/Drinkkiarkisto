@@ -1,0 +1,60 @@
+<?php
+session_start();
+if (!isset($_SESSION["rooli"]) || $_SESSION["rooli"] != "admin") {
+    header("Location: login.php");
+    exit();
+}
+include "yhteys.php";
+
+$viesti = "";
+
+if (isset($_POST["lisaa"])) {
+    $aines = $yhteys->real_escape_string(trim($_POST["aines"]));
+
+    if ($aines == "") {
+        $viesti = "Tyhjä kenttä.";
+    } else {
+        $check = $yhteys->query("SELECT * FROM ainesosa WHERE nimi='$aines'");
+        if ($check->num_rows == 0) {
+            $yhteys->query("INSERT INTO ainesosa (nimi) VALUES ('$aines')");
+            $viesti = "Aines lisätty.";
+        } else {
+            $viesti = "Aines on jo olemassa.";
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ainekset</title>
+    <link rel="stylesheet" href="romantyyli.css">
+</head>
+<body>
+
+<?php include "naviAdmin.php"; ?>
+
+<div class="box">
+    <h1>Lisää aines</h1>
+    <form method="post">
+        <input type="text" name="aines" placeholder="Aineksen nimi"><br><br>
+        <input type="submit" name="lisaa" value="Lisää">
+    </form>
+    <p><?php echo $viesti; ?></p>
+</div>
+
+<div class="box">
+    <h1>Lisätyt ainekset</h1>
+    <div class="lista">
+        <?php
+        $tulos = $yhteys->query("SELECT * FROM ainesosa ORDER BY nimi");
+        while ($rivi = $tulos->fetch_assoc()) {
+            echo "<p><b>Ainesosa:</b> " . $rivi["nimi"] . "</p>";
+        }
+        $yhteys->close();
+        ?>
+    </div>
+</div>
+
+</body>
+</html>
